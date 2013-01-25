@@ -573,10 +573,8 @@ void print_error_barchart_script(FILE* out)
 void print_top_overrepresentated_long(FILE* out,struct seq_stats* seq_stats,struct parameters* param)
 {
 	char nuc[] = "ACGTN";
-	float total;
 	int i,j,g;
 	
-	total = 0.0f;
 	
 
 	double* mer_sum = malloc(sizeof(double)* KMERALLOC);
@@ -725,7 +723,7 @@ void print_top_overrepresentated(FILE* out,struct seq_stats* seq_stats,struct pa
 	int max_len[6];
 	int min_len[6];
 	
-	double total = 0;
+	float total = 0;
 	double p_value = 0.0f;
 	int num_kmers = 1 <<(param->kmer_size *2) ;
 	char nuc[] = "ACGTN";
