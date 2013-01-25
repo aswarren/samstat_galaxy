@@ -42,6 +42,7 @@ struct parameters {
 	char* format;
 	char* filter;
 	char* alt_lib_name;
+	char* label;
 	int gzipped;
 	int sam;
 };

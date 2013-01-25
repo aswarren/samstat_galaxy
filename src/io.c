@@ -262,7 +262,7 @@ int read_sam_chunk(struct read_info** ri,struct parameters* param,FILE* file)
 						case 2: // <FLAG>
 							tmp = atoi(line+i+1);
 							ri[c]->strand[hit] = (tmp & 0x10);
-							if(tmp == 4){
+							if(tmp & 0x04){
 								ri[c]->hits[hit] = 0;
 							}else{
 								ri[c]->hits[hit] = 1;

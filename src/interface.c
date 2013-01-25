@@ -50,6 +50,7 @@ struct parameters* interface(struct parameters* param,int argc, char *argv[])
 	param->format = 0;
 	param->filter = 0;
 	param->alt_lib_name = 0;
+	param->label = 0;
 	param->gzipped = 0;
 	param->sam = 0;
 		
@@ -62,7 +63,7 @@ struct parameters* interface(struct parameters* param,int argc, char *argv[])
 		};
 		
 		int option_index = 0;
-		c = getopt_long_only (argc, argv,"qhk:s:f:n:F:",long_options, &option_index);
+		c = getopt_long_only (argc, argv,"qhk:s:f:n:F:l:",long_options, &option_index);
 		
 		if (c == -1){
 			break;
@@ -95,6 +96,9 @@ struct parameters* interface(struct parameters* param,int argc, char *argv[])
 				break;
 			case 'n':
 				param->alt_lib_name = optarg;
+				break;
+			case 'l':
+				param->label = optarg;
 				break;
 			case '?':
 				exit(1);

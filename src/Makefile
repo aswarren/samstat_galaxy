@@ -16,7 +16,7 @@ MANDIR      = /usr/share/man/
 MANSUFFIX = 1
 
 all: $(OBJECTS)
-	$(CC) $(CFLAGS) $(LD) $(OBJECTS) -o $(PROGS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $(PROGS) $(LD)
 	
 %.o:	%.c
 	$(CC) $(CFLAGS) -c $< -o $@

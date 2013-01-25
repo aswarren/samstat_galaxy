@@ -44,7 +44,7 @@ int main (int argc,char * argv[]) {
 		}
 	}
 	
-	if(!param->infiles && !isatty(0)){
+	if(param->format || (!param->infiles && !isatty(0))){
 		if(!param->format){
 			fprintf(stderr,"No format specified. Use -f <sam | bam | fa | fq > \n");
 			exit(-1);
@@ -72,7 +72,7 @@ int main (int argc,char * argv[]) {
 		}else{
 			param->sam = -1;
 		}
-		if(param->sam != -1){
+		if(param->sam != -1 && !param->infiles && !isatty(0)){
 			fprintf(stdout,"Working on: stdin\n");
 			seq_stats = init_seq_stats(param->kmer_size);
 			seq_stats->sam = param->sam;
@@ -96,57 +96,60 @@ int main (int argc,char * argv[]) {
 	}
 	
 	for(i = 0; i < param->infiles;i++){
-		param->sam = 0;
-		//if(byg_end(".sam", param->infile[i])   == strlen(param->infile[i])){
-		if(!strcmp(".sam", param->infile[i] + (strlen(param->infile[i] ) - 4))){
-			param->sam = 1;
-		//}else if (byg_end(".bam", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".bam", param->infile[i] + (strlen(param->infile[i] ) - 4))){
-			param->sam = 2;
-		//}else if (byg_end(".fa", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fa", param->infile[i] + (strlen(param->infile[i] ) - 3))){
+		if(!param->format || param->sam == -1){
 			param->sam = 0;
-		//}else if (byg_end(".fq", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fq", param->infile[i] + (strlen(param->infile[i] ) - 3))){
-			param->sam = 0;
-		//}else if (byg_end(".fastq", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fastq", param->infile[i] + (strlen(param->infile[i] ) - 6))){
-			param->sam = 0;
-		//}else if (byg_end(".fastaq", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fastaq", param->infile[i] + (strlen(param->infile[i] ) - 7))){
-			param->sam = 0;
-		//}else if (byg_end(".fasta", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fasta", param->infile[i] + (strlen(param->infile[i] ) - 6))){
-			param->sam = 0;
-		}else if(!strcmp(".sam.gz", param->infile[i] + (strlen(param->infile[i] ) - 7))){
-			param->sam = 1;
-			param->gzipped  = 1;
+			
+			//if(byg_end(".sam", param->infile[i])   == strlen(param->infile[i])){
+			if(!strcmp(".sam", param->infile[i] + (strlen(param->infile[i] ) - 4))){
+				param->sam = 1;
 			//}else if (byg_end(".bam", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".bam.gz", param->infile[i] + (strlen(param->infile[i] ) - 7))){
-			param->sam = 2;
-			param->gzipped  = 1;
+			}else if (!strcmp(".bam", param->infile[i] + (strlen(param->infile[i] ) - 4))){
+				param->sam = 2;
 			//}else if (byg_end(".fa", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fa.gz", param->infile[i] + (strlen(param->infile[i] ) - 6))){
-			param->sam = 0;
-			param->gzipped  = 1;
+			}else if (!strcmp(".fa", param->infile[i] + (strlen(param->infile[i] ) - 3))){
+				param->sam = 0;
 			//}else if (byg_end(".fq", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fq.gz", param->infile[i] + (strlen(param->infile[i] ) - 6))){
-			param->sam = 0;
-			param->gzipped  = 1;
+			}else if (!strcmp(".fq", param->infile[i] + (strlen(param->infile[i] ) - 3))){
+				param->sam = 0;
 			//}else if (byg_end(".fastq", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fastq.gz", param->infile[i] + (strlen(param->infile[i] ) - 9))){
-			param->sam = 0;
-			param->gzipped  = 1;
+			}else if (!strcmp(".fastq", param->infile[i] + (strlen(param->infile[i] ) - 6))){
+				param->sam = 0;
 			//}else if (byg_end(".fastaq", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fastaq.gz", param->infile[i] + (strlen(param->infile[i] ) - 10))){
-			param->sam = 0;
-			param->gzipped  = 1;
+			}else if (!strcmp(".fastaq", param->infile[i] + (strlen(param->infile[i] ) - 7))){
+				param->sam = 0;
 			//}else if (byg_end(".fasta", param->infile[i])  == strlen(param->infile[i])){
-		}else if (!strcmp(".fasta.gz", param->infile[i] + (strlen(param->infile[i] ) - 9))){
-			param->sam = 0;
-			param->gzipped  = 1;
-		}else{
-			param->sam = -1;
+			}else if (!strcmp(".fasta", param->infile[i] + (strlen(param->infile[i] ) - 6))){
+				param->sam = 0;
+			}else if(!strcmp(".sam.gz", param->infile[i] + (strlen(param->infile[i] ) - 7))){
+				param->sam = 1;
+				param->gzipped  = 1;
+				//}else if (byg_end(".bam", param->infile[i])  == strlen(param->infile[i])){
+			}else if (!strcmp(".bam.gz", param->infile[i] + (strlen(param->infile[i] ) - 7))){
+				param->sam = 2;
+				param->gzipped  = 1;
+				//}else if (byg_end(".fa", param->infile[i])  == strlen(param->infile[i])){
+			}else if (!strcmp(".fa.gz", param->infile[i] + (strlen(param->infile[i] ) - 6))){
+				param->sam = 0;
+				param->gzipped  = 1;
+				//}else if (byg_end(".fq", param->infile[i])  == strlen(param->infile[i])){
+			}else if (!strcmp(".fq.gz", param->infile[i] + (strlen(param->infile[i] ) - 6))){
+				param->sam = 0;
+				param->gzipped  = 1;
+				//}else if (byg_end(".fastq", param->infile[i])  == strlen(param->infile[i])){
+			}else if (!strcmp(".fastq.gz", param->infile[i] + (strlen(param->infile[i] ) - 9))){
+				param->sam = 0;
+				param->gzipped  = 1;
+				//}else if (byg_end(".fastaq", param->infile[i])  == strlen(param->infile[i])){
+			}else if (!strcmp(".fastaq.gz", param->infile[i] + (strlen(param->infile[i] ) - 10))){
+				param->sam = 0;
+				param->gzipped  = 1;
+				//}else if (byg_end(".fasta", param->infile[i])  == strlen(param->infile[i])){
+			}else if (!strcmp(".fasta.gz", param->infile[i] + (strlen(param->infile[i] ) - 9))){
+				param->sam = 0;
+				param->gzipped  = 1;
+			}else{
+				param->sam = -1;
+			}
 		}
 		//fprintf(stdout,"Loking at on:%s	%d\n",param->infile[i],sam);
 		if(param->sam != -1){
@@ -224,7 +227,10 @@ void print_summary(struct seq_stats* seq_stats,struct parameters* param,int file
 		fprintf(outfile,"\n");
 		gaga = 0;
 	}
-	if(param->alt_lib_name){
+	if(param->label){
+		fprintf(outfile,"%s\t",param->label);
+	}
+	else if(param->alt_lib_name){
 		fprintf(outfile,"%s\t",param->alt_lib_name);
 	}else if(file_num == -1){
 		fprintf(outfile,"%s\t","stdin");

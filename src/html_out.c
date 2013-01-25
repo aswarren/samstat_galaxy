@@ -48,16 +48,17 @@ void print_html_page(struct seq_stats* seq_stats,struct parameters* param,int fi
 	
 	if(param->alt_lib_name){
 		//fprintf(outfile,"%s\t",param->alt_lib_name);
-		param->outfile = malloc(sizeof(char)*  (strlen(param->alt_lib_name)+ 7) );
+		param->outfile = malloc(sizeof(char)*  (strlen(param->alt_lib_name)+ 1) );
 		for(i = 0;i < strlen(param->alt_lib_name);i++){
 			param->outfile[i] = param->alt_lib_name[i];
 		}
-		param->outfile[i+0] = '.'; 
-		param->outfile[i+1] = 'h';
-		param->outfile[i+2] = 't';
-		param->outfile[i+3] = 'm';
-		param->outfile[i+4]  = 'l';
-		param->outfile[i+5]  = 0;
+		param->outfile[i+0] = 0;
+		//param->outfile[i+0] = '.'; 
+		//param->outfile[i+1] = 'h';
+		//param->outfile[i+2] = 't';
+		//param->outfile[i+3] = 'm';
+		//param->outfile[i+4]  = 'l';
+		//param->outfile[i+5]  = 0;
 	}else if(file_num == -1 ){
 		param->outfile = malloc(sizeof(char)*11 );
 
@@ -92,7 +93,10 @@ void print_html_page(struct seq_stats* seq_stats,struct parameters* param,int fi
 	}
 	
 	//outfile = stdout;
-	if(param->alt_lib_name){
+	if(param->label){
+		print_header(outfile,param->label );
+	}
+	else if(param->alt_lib_name){
 		print_header(outfile,param->alt_lib_name );
 	}else  if(file_num == -1 ){
 		print_header(outfile,"stdin");
@@ -122,8 +126,10 @@ void print_html_page(struct seq_stats* seq_stats,struct parameters* param,int fi
 	}
 	
 	//print_start_html(outfile,param->infile[file_num],seq_stats);
-	
-	if(param->alt_lib_name){
+        if(param->label){
+                print_start_html(outfile,param->label ,seq_stats);
+        }	
+	else if(param->alt_lib_name){
 		print_start_html(outfile,param->alt_lib_name ,seq_stats);
 	}else  if(file_num == -1 ){
 		print_start_html(outfile,"stdin",seq_stats);
@@ -567,7 +573,7 @@ void print_error_barchart_script(FILE* out)
 void print_top_overrepresentated_long(FILE* out,struct seq_stats* seq_stats,struct parameters* param)
 {
 	char nuc[] = "ACGTN";
-	double total;
+	float total;
 	int i,j,g;
 	
 	total = 0.0f;
@@ -598,7 +604,7 @@ void print_top_overrepresentated_long(FILE* out,struct seq_stats* seq_stats,stru
 				//if(seq_stats->ten_mers[j][i]->count == 2431){
 				//fprintf(stderr,"%d	%f	%d	%f	",seq_stats->ten_mers[j][i]->count,sum_Q[j]  ,seq_stats->ten_mers[j][i]->identifier,mer_sum[i]);
 				//}
-
+				//fprintf(stderr,"tenmers: %d    %f      %d      %f     \n",seq_stats->ten_mers[j][i]->count,sum_Q[j] ,seq_stats->ten_mers[j][i]->count,mer_sum[i]);
 				seq_stats->ten_mers[j][i]->p_value = betai(seq_stats->ten_mers[j][i]->count,sum_Q[j] - seq_stats->ten_mers[j][i]->count + 1, mer_sum[i]) * KMERALLOC;
 				
 				if(seq_stats->ten_mers[j][i]->p_value > 1.0f){
@@ -719,7 +725,7 @@ void print_top_overrepresentated(FILE* out,struct seq_stats* seq_stats,struct pa
 	int max_len[6];
 	int min_len[6];
 	
-	int total = 0;
+	double total = 0;
 	double p_value = 0.0f;
 	int num_kmers = 1 <<(param->kmer_size *2) ;
 	char nuc[] = "ACGTN";
@@ -766,7 +772,7 @@ void print_top_overrepresentated(FILE* out,struct seq_stats* seq_stats,struct pa
 	}
 	
 	for(i = 0; i < num_kmers;i++){
-		p_nuc[i] = p_nuc[i] / (float)total;
+		p_nuc[i] = p_nuc[i] / total;
 	}
 	
 	struct mer_info** mi  = malloc(sizeof(struct mer_info*)* num_kmers);
@@ -802,7 +808,6 @@ void print_top_overrepresentated(FILE* out,struct seq_stats* seq_stats,struct pa
 			for(c= 0; c < min_len[i]- (param->kmer_size -1);c++){
 				for(j = 0; j < num_kmers;j++){
 					if(seq_stats->kmers[i][c][j]){
-							
 						p_value = betai(seq_stats->kmers[i][c][j],seq_stats->alignments[i] - seq_stats->kmers[i][c][j] +1, p_nuc[j]) * (double) min_len[i] * (double) num_kmers;
 						if(p_value > 1.0){
 							p_value = 1.0;
@@ -945,7 +950,7 @@ void print_nucleotide_overrepresentation(FILE* out,struct seq_stats* seq_stats,s
 	int max_len[6];
 	int min_len[6];
 	
-	int total = 0;
+	float total = 0.0f;
 	int div;
 	double p_value = 0.0f;
 	double tmp = 0.0f;
@@ -995,7 +1000,7 @@ void print_nucleotide_overrepresentation(FILE* out,struct seq_stats* seq_stats,s
 	}
 	
 	for(i = 0; i < num_kmers;i++){
-		p_nuc[i] = p_nuc[i] / (float)total;
+		p_nuc[i] = p_nuc[i] / total;
 	}
 	//fprintf(out,"<section>\n");
 	div = 1000;
